@@ -134,18 +134,44 @@ function getCellClassName({generation, isLive}) {
   return `gen-${Math.min(generation, 6)}`;
 }
 
-
 function init() {
   state = makeData();
   populateHtml(state);
 }
 
-document.getElementById('tick-btn').addEventListener('click', function(e) {
+const playBtn = document.getElementById('play-btn');
+const autoPlayBtn = document.getElementById('autoplay-btn');
+const stopBtn = document.getElementById('stop-btn');
+
+playBtn.addEventListener('click', function(e) {
   e.preventDefault();
 
   const nextState = tick(state);
   state = nextState;
   updateHtml(nextState);
 });
+
+let autoplayInterval;
+autoPlayBtn.addEventListener('click', function(e) {
+  e.preventDefault();
+
+  playBtn.classList.add('hidden');
+  stopBtn.classList.remove('hidden');
+
+  autoplayInterval = setInterval(function() {
+    const nextState = tick(state);
+    state = nextState;
+    updateHtml(nextState);
+  }, 1000);
+});
+
+stopBtn.addEventListener('click', function(e) {
+  e.preventDefault();
+
+  playBtn.classList.remove('hidden');
+  stopBtn.classList.add('hidden');
+
+  clearInterval(autoplayInterval);
+})
 
 init();

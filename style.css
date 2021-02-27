@@ -6,6 +6,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  font-family: sans-serif;
   font-size: 16px;
 }
 
@@ -13,9 +14,27 @@ body {
   background-color: #f7d0c7;
 }
 
-#tick-btn {
-  display: block;
+.hidden {
+  display: none;
+}
+
+button {
+  background-color: #ff1a5a;
+  border: 0;
+  border-radius: 0;
+  color: #fff;
+  cursor: pointer;
+  line-height: 2;
   margin: 24px 0;
+  padding: 0 1em;
+}
+
+button:hover {
+  background-color: #cc1548;
+}
+
+button + button {
+  margin-left: 12px;
 }
 
 #container {
