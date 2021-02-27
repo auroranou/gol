@@ -6,12 +6,15 @@
  * 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
  */
 
+const dimension = 20;
+let state;
+
 function makeData() {
-  const rows = [...Array(20)].map((_, i) => i);
+  const rows = [...Array(dimension)].map((_, i) => i);
   return rows.map((r, i) => {
-    const cols = [...Array(20)].map((_, j) => j);
+    const cols = [...Array(dimension)].map((_, j) => j);
     const cells = cols.map((c, j) => {
-      const isLive = Math.random() < 0.5;
+      const isLive = Math.random() < 0.33;
       return {
         generation: isLive ? 1 : 0,
         isLive
@@ -19,6 +22,76 @@ function makeData() {
     });
     return cells;
   });
+}
+
+function tick(state) {
+  const nextState = [];
+
+  state.forEach((row, rowIdx) => {
+    nextState[rowIdx] = [];
+
+    row.forEach((cell, cellIdx) => {
+      const nextCellState = getNextCellState(rowIdx, cellIdx, cell);
+      nextState[rowIdx][cellIdx] = nextCellState;
+    });
+  });
+
+  return nextState;
+}
+
+function getNextCellState(rowIdx, cellIdx, cell) {
+  const liveNeighborCount = getLiveNeighbors(rowIdx, cellIdx);
+  if (cell.isLive) {
+    if (liveNeighborCount < 2 || liveNeighborCount > 3) {
+      return {
+        isLive: false,
+        generation: 0
+      }
+    } else if (liveNeighborCount === 2 || liveNeighborCount === 3) {
+      return {
+        isLive: true,
+        generation: cell.generation + 1
+      }
+    } else {
+      return cell;
+    }
+  } else {
+    if (liveNeighborCount === 3) {
+      return {
+        isLive: true,
+        generation: 1
+      }
+    } else {
+      return cell;
+    }
+  }
+}
+
+function getLiveNeighbors(rowIdx, cellIdx) {
+  let neighbors = {
+    left: state[rowIdx][cellIdx - 1] ?? undefined,
+    right: state[rowIdx][cellIdx + 1] ?? undefined,
+  };
+
+  if (state[rowIdx - 1]) {
+    neighbors = {...neighbors,
+      topLeft: state[rowIdx - 1] ? state[rowIdx-1][cellIdx - 1] : undefined,
+      top: state[rowIdx - 1] ? state[rowIdx-1][cellIdx] : undefined,
+      topRight: state[rowIdx - 1] ? state[rowIdx-1][cellIdx + 1] : undefined,
+    }
+  }
+
+  if (state[rowIdx + 1]) {
+    neighbors = {...neighbors,
+      bottomLeft: state[rowIdx + 1] ? state[rowIdx + 1][cellIdx - 1] : undefined,
+      bottom: state[rowIdx + 1] ? state[rowIdx + 1][cellIdx] : undefined,
+      bottomRight: state[rowIdx + 1] ? state[rowIdx + 1][cellIdx + 1] : undefined,
+    }
+  }
+
+  return Object.values(neighbors).reduce((acc, curr) => {
+    return curr?.isLive ? acc + 1 : acc;
+  }, 0);
 }
 
 function populateHtml(data) {
@@ -44,6 +117,15 @@ function populateHtml(data) {
   return container;
 }
 
+function updateHtml(data) {
+  data.forEach((row, i) => {
+    row.forEach((cell, j) => {
+      const cellElem = document.getElementById(`cell-${i}-${j}`);
+      cellElem.setAttribute('class', `cell ${getCellClassName(cell)}`);
+    });
+  });
+}
+
 function getCellClassName({generation, isLive}) {
   if (!isLive) {
     return 'dead';
@@ -58,9 +140,18 @@ function getCellClassName({generation, isLive}) {
   }
 }
 
+
 function init() {
-  const data = makeData();
-  populateHtml(data);
+  state = makeData();
+  populateHtml(state);
 }
+
+document.getElementById('tick-btn').addEventListener('click', function(e) {
+  e.preventDefault();
+
+  const nextState = tick(state);
+  state = nextState;
+  updateHtml(nextState);
+});
 
 init();
