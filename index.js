@@ -17,7 +17,7 @@ function makeData() {
       const isLive = Math.random() < 0.33;
       return {
         generation: isLive ? 1 : 0,
-      }
+      };
     });
   });
 }
@@ -37,69 +37,67 @@ function tick(state) {
 }
 
 function getNextCellState(rowIdx, cellIdx, cell) {
-  const liveNeighborCount = getLiveNeighbors(rowIdx, cellIdx);
+  const liveNeighborCount = countLiveNeighbors(rowIdx, cellIdx);
   if (cell.generation > 0) {
     if (liveNeighborCount < 2 || liveNeighborCount > 3) {
-      return {
-        generation: 0
-      }
+      return { generation: 0 };
     } else if (liveNeighborCount === 2 || liveNeighborCount === 3) {
-      return {
-        generation: cell.generation + 1
-      }
+      return { generation: cell.generation + 1 };
     } else {
       return cell;
     }
   } else {
     if (liveNeighborCount === 3) {
-      return {
-        generation: 1
-      }
+      return { generation: 1 };
     } else {
       return cell;
     }
   }
 }
 
-function getLiveNeighbors(rowIdx, cellIdx) {
+function countLiveNeighbors(rowIdx, cellIdx) {
   let neighbors = {
-    left: state[rowIdx][cellIdx - 1] ?? undefined,
-    right: state[rowIdx][cellIdx + 1] ?? undefined,
+    left: state[rowIdx][cellIdx - 1],
+    right: state[rowIdx][cellIdx + 1],
   };
 
   if (state[rowIdx - 1]) {
-    neighbors = {...neighbors,
-      topLeft: state[rowIdx - 1][cellIdx - 1] ?? undefined,
-      top: state[rowIdx - 1][cellIdx] ?? undefined,
-      topRight: state[rowIdx - 1][cellIdx + 1] ?? undefined,
-    }
+    neighbors = {
+      ...neighbors,
+      topLeft: state[rowIdx - 1][cellIdx - 1],
+      top: state[rowIdx - 1][cellIdx],
+      topRight: state[rowIdx - 1][cellIdx + 1],
+    };
   }
 
   if (state[rowIdx + 1]) {
-    neighbors = {...neighbors,
-      bottomLeft: state[rowIdx + 1][cellIdx - 1] ?? undefined,
-      bottom: state[rowIdx + 1][cellIdx] ?? undefined,
-      bottomRight: state[rowIdx + 1][cellIdx + 1] ?? undefined,
-    }
+    neighbors = {
+      ...neighbors,
+      bottomLeft: state[rowIdx + 1][cellIdx - 1],
+      bottom: state[rowIdx + 1][cellIdx],
+      bottomRight: state[rowIdx + 1][cellIdx + 1],
+    };
   }
 
-  return Object.values(neighbors)
-    .reduce((acc, curr) => curr?.generation > 0 ? acc + 1 : acc, 0);
+  return Object.values(neighbors).reduce(
+    (acc, curr) => (curr?.generation > 0 ? acc + 1 : acc),
+    0
+  );
 }
 
 function populateHtml(data) {
-  const container = document.getElementById('container');
+  const container = document.getElementById("container");
 
   data.forEach((row, i) => {
-    const rowElem = document.createElement('div');
+    const rowElem = document.createElement("div");
     rowElem.id = `row-${i}`;
-    rowElem.classList.add('row');
+    rowElem.classList.add("row");
     container.appendChild(rowElem);
 
     row.forEach((cell, j) => {
-      const cellElem = document.createElement('span');
+      const cellElem = document.createElement("span");
       cellElem.id = `cell-${i}-${j}`;
-      cellElem.classList.add('cell', getCellClassName(cell));
+      cellElem.classList.add("cell", getCellClassName(cell));
       rowElem.appendChild(cellElem);
     });
   });
@@ -111,14 +109,14 @@ function updateHtml(data) {
   data.forEach((row, i) => {
     row.forEach((cell, j) => {
       const cellElem = document.getElementById(`cell-${i}-${j}`);
-      cellElem.setAttribute('class', `cell ${getCellClassName(cell)}`);
+      cellElem.setAttribute("class", `cell ${getCellClassName(cell)}`);
     });
   });
 }
 
-function getCellClassName({generation}) {
+function getCellClassName({ generation }) {
   if (generation == 0) {
-    return 'dead';
+    return "dead";
   }
 
   return `gen-${Math.min(generation, 6)}`;
@@ -129,11 +127,11 @@ function init() {
   populateHtml(state);
 }
 
-const playBtn = document.getElementById('play-btn');
-const autoPlayBtn = document.getElementById('autoplay-btn');
-const stopBtn = document.getElementById('stop-btn');
+const playBtn = document.getElementById("play-btn");
+const autoPlayBtn = document.getElementById("autoplay-btn");
+const stopBtn = document.getElementById("stop-btn");
 
-playBtn.addEventListener('click', function(e) {
+playBtn.addEventListener("click", function (e) {
   e.preventDefault();
 
   const nextState = tick(state);
@@ -142,28 +140,28 @@ playBtn.addEventListener('click', function(e) {
 });
 
 let autoplayInterval;
-autoPlayBtn.addEventListener('click', function(e) {
+autoPlayBtn.addEventListener("click", function (e) {
   e.preventDefault();
 
   autoPlayBtn.disabled = true;
-  playBtn.classList.add('hidden');
-  stopBtn.classList.remove('hidden');
+  playBtn.classList.add("hidden");
+  stopBtn.classList.remove("hidden");
 
-  autoplayInterval = setInterval(function() {
+  autoplayInterval = setInterval(function () {
     const nextState = tick(state);
     state = nextState;
     updateHtml(nextState);
   }, 1000);
 });
 
-stopBtn.addEventListener('click', function(e) {
+stopBtn.addEventListener("click", function (e) {
   e.preventDefault();
 
   autoPlayBtn.disabled = false;
-  playBtn.classList.remove('hidden');
-  stopBtn.classList.add('hidden');
+  playBtn.classList.remove("hidden");
+  stopBtn.classList.add("hidden");
 
   clearInterval(autoplayInterval);
-})
+});
 
 init();
