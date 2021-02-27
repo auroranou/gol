@@ -1,8 +1,16 @@
+:root {
+  --border-color: rgba(255, 255, 255, 0.25);
+}
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
   font-size: 16px;
+}
+
+body {
+  background-color: #f7d0c7;
 }
 
 #tick-btn {
@@ -11,13 +19,14 @@
 }
 
 #container {
+  background-color: rgba(255, 255, 255, 0.15);
   display: inline-flex;
   flex-flow: column nowrap;
 }
 
 .row {
   align-items: center;
-  border-top: 1px solid lightgray;
+  border-top: 1px solid var(--border-color);
   display: flex;
   flex-flow: row nowrap;
   height: 24px;
@@ -25,32 +34,44 @@
 }
 
 .row:last-child {
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .cell {
-  border-left: 1px solid lightgray;
+  border-left: 1px solid var(--border-color);
   display: inline-block;
   height: inherit;
   width: 24px;
 }
 
 .cell:last-child {
-  border-right: 1px solid lightgray;
+  border-right: 1px solid var(--border-color);
 }
 
 .cell::after {
   line-height: 24px;
 }
 
-.seedling::after {
+.gen-1::after {
   content: "🌱";
 }
 
-.leaves::after {
+.gen-2::after {
   content: "🌿";
 }
 
-.tree::after {
+.gen-3::after {
+  content: "🌸";
+}
+
+.gen-4::after {
+  content: "🌷";
+}
+
+.gen-5::after {
+  content: "🌺";
+}
+
+.gen-6::after {
   content: "🌳";
 }

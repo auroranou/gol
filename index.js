@@ -127,17 +127,11 @@ function updateHtml(data) {
 }
 
 function getCellClassName({generation, isLive}) {
-  if (!isLive) {
+  if (!isLive || generation == 0) {
     return 'dead';
   }
 
-  if (generation === 1) {
-    return 'seedling'; // code point 127793
-  } else if (generation === 2) {
-    return 'leaves'; // 127807
-  } else if (generation >= 3) {
-    return 'tree'; // 127795
-  }
+  return `gen-${Math.min(generation, 6)}`;
 }
 
 
