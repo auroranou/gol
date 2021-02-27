@@ -11,16 +11,15 @@ let state;
 
 function makeData() {
   const rows = [...Array(dimension)].map((_, i) => i);
-  return rows.map((r, i) => {
+  return rows.map(() => {
     const cols = [...Array(dimension)].map((_, j) => j);
-    const cells = cols.map((c, j) => {
+    return cols.map(() => {
       const isLive = Math.random() < 0.33;
       return {
         generation: isLive ? 1 : 0,
         isLive
       }
     });
-    return cells;
   });
 }
 
@@ -31,8 +30,7 @@ function tick(state) {
     nextState[rowIdx] = [];
 
     row.forEach((cell, cellIdx) => {
-      const nextCellState = getNextCellState(rowIdx, cellIdx, cell);
-      nextState[rowIdx][cellIdx] = nextCellState;
+      nextState[rowIdx][cellIdx] = getNextCellState(rowIdx, cellIdx, cell);
     });
   });
 
@@ -75,30 +73,26 @@ function getLiveNeighbors(rowIdx, cellIdx) {
 
   if (state[rowIdx - 1]) {
     neighbors = {...neighbors,
-      topLeft: state[rowIdx - 1] ? state[rowIdx-1][cellIdx - 1] : undefined,
-      top: state[rowIdx - 1] ? state[rowIdx-1][cellIdx] : undefined,
-      topRight: state[rowIdx - 1] ? state[rowIdx-1][cellIdx + 1] : undefined,
+      topLeft: state[rowIdx-1][cellIdx - 1] ?? undefined,
+      top: state[rowIdx-1][cellIdx] ?? undefined,
+      topRight: state[rowIdx-1][cellIdx + 1] ?? undefined,
     }
   }
 
   if (state[rowIdx + 1]) {
     neighbors = {...neighbors,
-      bottomLeft: state[rowIdx + 1] ? state[rowIdx + 1][cellIdx - 1] : undefined,
-      bottom: state[rowIdx + 1] ? state[rowIdx + 1][cellIdx] : undefined,
-      bottomRight: state[rowIdx + 1] ? state[rowIdx + 1][cellIdx + 1] : undefined,
+      bottomLeft: state[rowIdx + 1][cellIdx - 1] ?? undefined,
+      bottom: state[rowIdx + 1][cellIdx] ?? undefined,
+      bottomRight: state[rowIdx + 1][cellIdx + 1] ?? undefined,
     }
   }
 
-  return Object.values(neighbors).reduce((acc, curr) => {
-    return curr?.isLive ? acc + 1 : acc;
-  }, 0);
+  return Object.values(neighbors)
+    .reduce((acc, curr) => curr?.isLive ? acc + 1 : acc, 0);
 }
 
 function populateHtml(data) {
   const container = document.getElementById('container');
-  if (!container) {
-    return;
-  }
 
   data.forEach((row, i) => {
     const rowElem = document.createElement('div');
@@ -155,6 +149,7 @@ let autoplayInterval;
 autoPlayBtn.addEventListener('click', function(e) {
   e.preventDefault();
 
+  autoPlayBtn.disabled = true;
   playBtn.classList.add('hidden');
   stopBtn.classList.remove('hidden');
 
@@ -168,6 +163,7 @@ autoPlayBtn.addEventListener('click', function(e) {
 stopBtn.addEventListener('click', function(e) {
   e.preventDefault();
 
+  autoPlayBtn.disabled = false;
   playBtn.classList.remove('hidden');
   stopBtn.classList.add('hidden');
 

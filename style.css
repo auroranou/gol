@@ -33,6 +33,11 @@ button:hover {
   background-color: #cc1548;
 }
 
+button:disabled {
+  background-color: #f57296;
+  cursor: default;
+}
+
 button + button {
   margin-left: 12px;
 }
