@@ -12,6 +12,8 @@
 
 body {
   background-color: #f7d0c7;
+  margin: 0;
+  padding: 24px;
 }
 
 .hidden {
