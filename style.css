@@ -1,0 +1,51 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+#container {
+  display: inline-flex;
+  flex-flow: column nowrap;
+}
+
+.row {
+  align-items: center;
+  border-top: 1px solid lightgray;
+  display: flex;
+  flex-flow: row nowrap;
+  height: 24px;
+  justify-content: center;
+}
+
+.row:last-child {
+  border-bottom: 1px solid lightgray;
+}
+
+.cell {
+  border-left: 1px solid lightgray;
+  display: inline-block;
+  height: inherit;
+  width: 24px;
+}
+
+.cell:last-child {
+  border-right: 1px solid lightgray;
+}
+
+.cell::after {
+  line-height: 24px;
+}
+
+.seedling::after {
+  content: "🌱";
+}
+
+.leaves::after {
+  content: "🌿";
+}
+
+.tree::after {
+  content: "🌳";
+}
