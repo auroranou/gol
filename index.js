@@ -17,7 +17,6 @@ function makeData() {
       const isLive = Math.random() < 0.33;
       return {
         generation: isLive ? 1 : 0,
-        isLive
       }
     });
   });
@@ -39,15 +38,13 @@ function tick(state) {
 
 function getNextCellState(rowIdx, cellIdx, cell) {
   const liveNeighborCount = getLiveNeighbors(rowIdx, cellIdx);
-  if (cell.isLive) {
+  if (cell.generation > 0) {
     if (liveNeighborCount < 2 || liveNeighborCount > 3) {
       return {
-        isLive: false,
         generation: 0
       }
     } else if (liveNeighborCount === 2 || liveNeighborCount === 3) {
       return {
-        isLive: true,
         generation: cell.generation + 1
       }
     } else {
@@ -56,7 +53,6 @@ function getNextCellState(rowIdx, cellIdx, cell) {
   } else {
     if (liveNeighborCount === 3) {
       return {
-        isLive: true,
         generation: 1
       }
     } else {
@@ -73,9 +69,9 @@ function getLiveNeighbors(rowIdx, cellIdx) {
 
   if (state[rowIdx - 1]) {
     neighbors = {...neighbors,
-      topLeft: state[rowIdx-1][cellIdx - 1] ?? undefined,
-      top: state[rowIdx-1][cellIdx] ?? undefined,
-      topRight: state[rowIdx-1][cellIdx + 1] ?? undefined,
+      topLeft: state[rowIdx - 1][cellIdx - 1] ?? undefined,
+      top: state[rowIdx - 1][cellIdx] ?? undefined,
+      topRight: state[rowIdx - 1][cellIdx + 1] ?? undefined,
     }
   }
 
@@ -88,7 +84,7 @@ function getLiveNeighbors(rowIdx, cellIdx) {
   }
 
   return Object.values(neighbors)
-    .reduce((acc, curr) => curr?.isLive ? acc + 1 : acc, 0);
+    .reduce((acc, curr) => curr?.generation > 0 ? acc + 1 : acc, 0);
 }
 
 function populateHtml(data) {
@@ -120,8 +116,8 @@ function updateHtml(data) {
   });
 }
 
-function getCellClassName({generation, isLive}) {
-  if (!isLive || generation == 0) {
+function getCellClassName({generation}) {
+  if (generation == 0) {
     return 'dead';
   }
 
